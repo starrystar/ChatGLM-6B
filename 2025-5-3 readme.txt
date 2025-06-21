@@ -1,0 +1,27 @@
+# 安装
+感觉先选定Python并安装相应cuda版本的torch，再装其他，否则很多报错。
+还要安装huggingface上ChatGLM库的依赖：https://github.com/THUDM/ChatGLM-6B?tab=readme-ov-file
+pip install protobuf==3.20.0 transformers==4.27.1 icetk cpm_kernels
+
+pip uninstall numpy -y
+pip install numpy==1.26.4
+
+# python cli_demo.py
+或者web_demo.py
+因为 readline 不支持 Windows
+pip install pyreadline3
+import pyreadline as readline
+
+# ptuning文件夹
+下载AdvertiseGen.tar.gz数据集
+bash train.sh
+## 参数
+prompt_column、response_column分别指定数据集中的prompt和response是哪个字段的内容  
+去掉--overwrite_cache的时候就可以重用tokenizer的结果，尤其是针对同一个数据集反复fine-tune的情况。如果换掉数据的话一定要加上。
+model_name_or_path 也是修改成你的相对或者绝对路径
+per_device_eval_batch_size和gradient_accumulation_steps配合，如果一张卡上的样本太小的话噪声会很大，可能不一定能够收敛，所以累积几个batch的梯度假装是一个batch的梯度可以减小噪声。
+max_source/target_length就是如果超出这个长度就会直接截断。尤其是数据集中可能爬的时候没有弄好，一下很长的话就没法做batch或者不好跑tokenizer，如果没有截断的话这时候只好杀显存了。
+pre_seq_len $PRE_SEQ_LEN就是P-tuning里面增加的token的数量。
+
+# ds_train_finetune.sh全量微调
+

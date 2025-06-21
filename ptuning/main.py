@@ -23,6 +23,7 @@ import os
 import sys
 import json
 
+from filelock import FileLock
 import numpy as np
 from datasets import load_dataset
 import jieba 
@@ -121,7 +122,8 @@ def main():
                 new_prefix_state_dict[k[len("transformer.prefix_encoder."):]] = v
         model.transformer.prefix_encoder.load_state_dict(new_prefix_state_dict)
     else:
-        model = AutoModel.from_pretrained(model_args.model_name_or_path, config=config, trust_remote_code=True)
+        with FileLock("model.lock"): # deepspeed在加载Model和tokenizer，可能会有进程冲突，可以加一个lock让他们不一起加载而是一个一个的加载
+            model = AutoModel.from_pretrained(model_args.model_name_or_path, config=config, trust_remote_code=True)
 
     if model_args.quantization_bit is not None:
         print(f"Quantized to {model_args.quantization_bit} bit")

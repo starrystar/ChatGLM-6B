@@ -2,10 +2,10 @@ import os
 import platform
 import signal
 from transformers import AutoTokenizer, AutoModel
-import readline
+import pyreadline3 as readline
 
-tokenizer = AutoTokenizer.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True)
-model = AutoModel.from_pretrained("THUDM/chatglm-6b", trust_remote_code=True).half().cuda()
+tokenizer = AutoTokenizer.from_pretrained(r"..\THUDM\chatglm-6b", trust_remote_code=True)
+model = AutoModel.from_pretrained(r"..\THUDM\chatglm-6b", trust_remote_code=True).half().cuda()
 model = model.eval()
 
 os_name = platform.system()
